@@ -1,0 +1,426 @@
+﻿@using System.Text.Json
+@{
+    ViewData["Title"] = "Stability Result";
+    var level = ViewBag.StabilityLevel as string;
+    var sddValues = ViewBag.SDDValues as RoboticStabilityPredictor.Controllers.SDDValues;
+    var inputData = ViewBag.InputData;
+    var armParameters = ViewBag.ArmParameters as System.Collections.Generic.List<object>;
+    var color = level == "High" ? "#28a745" : level == "Medium" ? "#ffc107" : "#dc3545";
+    var emoji = level == "High" ? "🟢" : level == "Medium" ? "🟡" : "🔴";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+    .result-card {
+        background-color: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 800px;
+        margin: 3rem auto;
+        border-top: 8px solid @color;
+    }
+
+    .stability-level {
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: @color;
+        margin-bottom: 1rem;
+        animation: bounce 1.5s infinite;
+    }
+
+    .emoji {
+        font-size: 3rem;
+        animation: pulse 1.5s infinite;
+    }
+
+    .sdd-values {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .sdd-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .sdd-item {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        border-left: 4px solid #e80266;
+    }
+
+    .sdd-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .sdd-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #343a40;
+        margin-top: 0.5rem;
+    }
+
+    .input-summary {
+        background: #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .btn-export {
+        background-color: #28a745;
+        border: none;
+        margin: 0.5rem;
+    }
+
+    .btn-export:hover {
+        background-color: #218838;
+    }
+
+    .btn-save-master {
+        background-color: #007bff;
+        border: none;
+        margin: 0.5rem;
+    }
+
+    .btn-save-master:hover {
+        background-color: #0056b3;
+    }
+
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+
+    @@keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="result-card">
+    <div class="emoji">@emoji</div>
+    <div class="stability-level">@level Stability</div>
+    <p class="lead">
+        Based on your inputs, the robotic system shows <strong>@level</strong> stability.
+    </p>
+
+    @if (inputData != null)
+    {
+        <div class="input-summary">
+            <strong>Input Summary:</strong><br>
+            Robot Type: @inputData.RobotType | Arms: @inputData.NumberOfArms | 
+            Material: @inputData.Material | Force: @inputData.Force N
+        </div>
+    }
+
+    @if (sddValues != null)
+    {
+        <div class="sdd-values">
+            <h4 class="text-center mb-3">📊 Calculated SDD Values</h4>
+            <div class="sdd-grid">
+                <div class="sdd-item">
+                    <div class="sdd-label">Stiffness (Min)</div>
+                    <div class="sdd-value">@sddValues.MinStiffness.ToString("F2") N/m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Stiffness (Medium)</div>
+                    <div class="sdd-value">@sddValues.MediumStiffness.ToString("F2") N/m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Stiffness (Max)</div>
+                    <div class="sdd-value">@sddValues.MaxStiffness.ToString("F2") N/m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Deflection (Min)</div>
+                    <div class="sdd-value">@sddValues.MinDeflection.ToString("F6") m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Deflection (Medium)</div>
+                    <div class="sdd-value">@sddValues.MediumDeflection.ToString("F6") m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Deflection (Max)</div>
+                    <div class="sdd-value">@sddValues.MaxDeflection.ToString("F6") m</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Damping (Min)</div>
+                    <div class="sdd-value">@sddValues.MinDamping.ToString("F4")</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Damping (Medium)</div>
+                    <div class="sdd-value">@sddValues.MediumDamping.ToString("F4")</div>
+                </div>
+                <div class="sdd-item">
+                    <div class="sdd-label">Damping (Max)</div>
+                    <div class="sdd-value">@sddValues.MaxDamping.ToString("F4")</div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <button class="btn btn-export px-4 py-2" onclick="exportToExcel()">
+            📊 Export to Excel
+        </button>
+        <button class="btn btn-save-master px-4 py-2" onclick="saveToMasterFile()">
+            💾 Save to Master File
+        </button>
+        <a href="/Robotic/InputRobotType" class="btn btn-outline-secondary px-4 py-2">
+            🔄 Start Again
+        </a>
+    </div>
+</div>
+
+<script>
+    function exportToExcel() {
+        // Create workbook and worksheet
+        const wb = XLSX.utils.book_new();
+        
+        // Material properties for reference
+        const materialProperties = {
+            'steel': { youngsModulus: 200000, density: 7850 },
+            'aluminum': { youngsModulus: 70000, density: 2700 },
+            'titanium': { youngsModulus: 116000, density: 4500 },
+            'carbonFiber': { youngsModulus: 230000, density: 1600 },
+            'brass': { youngsModulus: 105000, density: 8500 },
+            'copper': { youngsModulus: 110000, density: 8960 }
+        };
+        
+        const material = '@inputData?.Material'.toLowerCase();
+        const numberOfArms = parseInt('@inputData?.NumberOfArms') || 0;
+        
+        // Create comprehensive data array
+        const inputData = [
+            // Header section
+            ['ROBOTIC STABILITY ANALYSIS REPORT'],
+            ['Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString()],
+            [''],
+            
+            // System Configuration section
+            ['=== SYSTEM CONFIGURATION ==='],
+            ['Robot Type:', '@inputData?.RobotType'],
+            ['Number of Arms:', '@inputData?.NumberOfArms'],
+            ['Material:', '@inputData?.Material'],
+            ['Applied Force (N):', '@inputData?.Force'],
+            [''],
+            
+            // Material Properties section
+            ['=== MATERIAL PROPERTIES ==='],
+            ['Parameter', 'Value', 'Unit'],
+            ['Young\'s Modulus', materialProperties[material]?.youngsModulus || 'N/A', 'MPa'],
+            ['Density', materialProperties[material]?.density || 'N/A', 'kg/m³'],
+            [''],
+            
+            // Individual Arm Parameters section
+            ['=== INDIVIDUAL ARM PARAMETERS ===']
+        ];
+        
+        // Add arm details header
+        inputData.push(['Arm #', 'Length (m)', 'Outer Diameter (m)', 'Inner Diameter (m)', 'Thickness (mm)', 'Mass (kg)', 'Volume (m³)']);
+        
+        // Get arm parameters data from server
+        // Serialize the ViewBag data to JSON
+        const armParametersData = @Html.Raw(JsonSerializer.Serialize(ViewBag.ArmParameters ?? new List<object>(), new JsonSerializerOptions { PropertyNamingPolicy = null }));
+        
+        // Debug: Log the arm parameters data
+        console.log('=== ARM PARAMETERS DEBUG ===');
+        console.log('Arm Parameters Data:', armParametersData);
+        console.log('Type:', typeof armParametersData);
+        console.log('Is Array:', Array.isArray(armParametersData));
+        console.log('Length:', armParametersData ? armParametersData.length : 'undefined');
+        console.log('Number of arms expected:', numberOfArms);
+        
+        if (armParametersData && Array.isArray(armParametersData)) {
+            console.log('Full arm data:', JSON.stringify(armParametersData, null, 2));
+        }
+        
+        if (armParametersData && armParametersData.length > 0) {
+            console.log(`Processing ${armParametersData.length} arms...`);
+            // Add each arm's data
+            armParametersData.forEach(function(arm, index) {
+                try {
+                    console.log(`Processing arm ${index + 1}:`, JSON.stringify(arm, null, 2));
+                    console.log(`  Length: ${arm.Length}, Type: ${typeof arm.Length}`);
+                    console.log(`  OuterDiameter: ${arm.OuterDiameter}, Type: ${typeof arm.OuterDiameter}`);
+                    console.log(`  Thickness: ${arm.Thickness}, Type: ${typeof arm.Thickness}`);
+                    console.log(`  Mass: ${arm.Mass}, Type: ${typeof arm.Mass}`);
+                    
+                    inputData.push([
+                        `Arm ${arm.ArmNumber || (index + 1)}`,
+                        (arm.Length != null && !isNaN(arm.Length) && arm.Length > 0) ? parseFloat(arm.Length).toFixed(3) : 'N/A',
+                        (arm.OuterDiameter != null && !isNaN(arm.OuterDiameter) && arm.OuterDiameter > 0) ? parseFloat(arm.OuterDiameter).toFixed(3) : 'N/A',
+                        (arm.InnerDiameter != null && !isNaN(arm.InnerDiameter) && arm.InnerDiameter >= 0) ? parseFloat(arm.InnerDiameter).toFixed(4) : 'N/A',
+                        (arm.Thickness != null && !isNaN(arm.Thickness) && arm.Thickness > 0) ? parseFloat(arm.Thickness).toFixed(1) : 'N/A',
+                        (arm.Mass != null && !isNaN(arm.Mass) && arm.Mass >= 0) ? parseFloat(arm.Mass).toFixed(2) : 'N/A',
+                        (arm.Volume != null && !isNaN(arm.Volume) && arm.Volume >= 0) ? parseFloat(arm.Volume).toFixed(6) : 'N/A'
+                    ]);
+                    
+                    console.log(`  ✅ Arm ${index + 1} processed successfully`);
+                } catch (error) {
+                    console.error(`❌ Error processing arm ${index + 1}:`, error, arm);
+                    // Add fallback row
+                    inputData.push([
+                        `Arm ${index + 1}`,
+                        'N/A',
+                        'N/A',
+                        'N/A',
+                        'N/A',
+                        'N/A',
+                        'N/A'
+                    ]);
+                }
+            });
+        } else {
+            // Fallback: Add placeholder rows if no arm data available
+            console.log('No arm parameters data available - using placeholders');
+            if (numberOfArms > 0) {
+                for (let i = 1; i <= numberOfArms; i++) {
+                    inputData.push([
+                        `Arm ${i}`,
+                        'N/A - Detailed analysis not performed',
+                        'N/A - Detailed analysis not performed',
+                        'N/A - Detailed analysis not performed',
+                        'N/A - Detailed analysis not performed',
+                        'N/A - Detailed analysis not performed',
+                        'N/A - Detailed analysis not performed'
+                    ]);
+                }
+            } else {
+                inputData.push([
+                    'No arm data',
+                    'N/A - Use detailed analysis for arm parameters',
+                    'N/A',
+                    'N/A',
+                    'N/A',
+                    'N/A',
+                    'N/A'
+                ]);
+            }
+        }
+        
+        // Add spacing and SDD Values section
+        inputData.push(['']);
+        inputData.push(['=== CALCULATED SDD VALUES ===']);
+        inputData.push(['Parameter', 'Min Value', 'Medium Value', 'Max Value', 'Unit']);
+        inputData.push(['Stiffness', '@sddValues?.MinStiffness.ToString("F2")', '@sddValues?.MediumStiffness.ToString("F2")', '@sddValues?.MaxStiffness.ToString("F2")', 'N/m']);
+        inputData.push(['Deflection', '@sddValues?.MinDeflection.ToString("F6")', '@sddValues?.MediumDeflection.ToString("F6")', '@sddValues?.MaxDeflection.ToString("F6")', 'm']);
+        inputData.push(['Damping', '@sddValues?.MinDamping.ToString("F4")', '@sddValues?.MediumDamping.ToString("F4")', '@sddValues?.MaxDamping.ToString("F4")', 'dimensionless']);
+        
+        // Add stability prediction section
+        inputData.push(['']);
+        inputData.push(['=== STABILITY PREDICTION ===']);
+        inputData.push(['Predicted Stability Level:', '@level']);
+        inputData.push(['Prediction Confidence:', 'High']);
+        inputData.push(['ML Model Used:', 'SDD-based Classification']);
+        
+        // Add summary statistics
+        inputData.push(['']);
+        inputData.push(['=== SUMMARY STATISTICS ===']);
+        inputData.push(['Total System Mass (kg):', 'Calculated from individual arms']);
+        inputData.push(['Average Stiffness (N/m):', '@sddValues?.MediumStiffness.ToString("F2")']);
+        inputData.push(['Average Deflection (m):', '@sddValues?.MediumDeflection.ToString("F6")']);
+        inputData.push(['Average Damping:', '@sddValues?.MediumDamping.ToString("F4")']);
+        
+        // Add footer
+        inputData.push(['']);
+        inputData.push(['=== REPORT INFORMATION ===']);
+        inputData.push(['Generated By:', 'Robotic Stability Predictor System']);
+        inputData.push(['Report Version:', '2.0']);
+        inputData.push(['Analysis Method:', 'Finite Element Analysis with ML Prediction']);
+        inputData.push(['Calculation Standards:', 'Engineering Mechanics Principles']);
+
+        const ws = XLSX.utils.aoa_to_sheet(inputData);
+        
+        // Enhanced column formatting
+        ws['!cols'] = [
+            { width: 25 }, // Parameter names
+            { width: 18 }, // Values
+            { width: 18 }, // Values
+            { width: 18 }, // Values
+            { width: 15 }, // Units
+            { width: 15 }, // Additional data
+            { width: 15 }  // Additional data
+        ];
+        
+        // Add cell styling ranges for better readability
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        
+        // Style headers (make them bold by adding to the cell style)
+        const headerRows = [0, 3, 10, 15, 24, 31, 38]; // Rows with section headers
+        
+        for (let row of headerRows) {
+            if (row <= range.e.r) {
+                const cellAddress = XLSX.utils.encode_cell({ r: row, c: 0 });
+                if (!ws[cellAddress]) ws[cellAddress] = { t: 's', v: '' };
+                ws[cellAddress].s = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "366092" } },
+                    alignment: { horizontal: "center" }
+                };
+            }
+        }
+
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Stability Analysis');
+
+        // Generate enhanced filename with timestamp
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        const filename = `Robotic_Stability_Report_${timestamp}.xlsx`;
+
+        // Save file
+        XLSX.writeFile(wb, filename);
+        
+        // Show success message
+        alert('Excel report generated successfully!\nFilename: ' + filename);
+    }
+
+    function saveToMasterFile() {
+        // Show loading indicator
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '⏳ Saving...';
+        button.disabled = true;
+
+        // Send AJAX request to save to persistent Excel file
+        fetch('/Robotic/SaveToPersistentExcel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            if (data.success) {
+                alert('✅ ' + data.message);
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            console.error('Error saving to master file:', error);
+            alert('❌ Error: Failed to save data to master file.');
+        });
+    }
+</script>

@@ -1,0 +1,287 @@
+@{
+    ViewData["Title"] = "Arm Parameters";
+    var robotType = ViewBag.RobotType as string;
+    var numberOfArms = ViewBag.NumberOfArms;
+    var material = ViewBag.Material as string;
+    var force = ViewBag.Force;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .arm-params-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        margin-top: 2rem;
+        transition: transform 0.2s;
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+
+    .arm-params-card:hover {
+        transform: scale(1.01);
+    }
+
+    .form-control:focus {
+        border-color: #e80266;
+        box-shadow: 0 0 0 0.25rem rgba(232, 2, 102, 0.25);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .btn-custom {
+        background-color: #e80266;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #c20158;
+    }
+
+    .section-header {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .summary-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+        display: inline-block;
+        margin-right: 1rem;
+        font-weight: 500;
+    }
+
+    .arm-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .arm-card:hover {
+        border-color: #e80266;
+        box-shadow: 0 4px 12px rgba(232, 2, 102, 0.15);
+    }
+
+    .arm-card.valid {
+        border-color: #28a745;
+        background: #f8fff9;
+    }
+
+    .arm-card.invalid {
+        border-color: #dc3545;
+        background: #fff8f8;
+    }
+
+    .arm-header {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .calculated-values {
+        background: #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: #495057;
+    }
+
+    .form-control-sm {
+        font-size: 0.9rem;
+    }
+
+    /* Responsive grid */
+    @@media (min-width: 1200px) {
+        .arm-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+    }
+
+    @@media (min-width: 768px) and (max-width: 1199px) {
+        .arm-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .arm-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="container d-flex justify-content-center">
+    <div class="arm-params-card w-100">
+        <h2 class="text-center section-header">🔧 Arm Parameters</h2>
+        
+        <div class="summary-info">
+            <span class="summary-item">🤖 Robot: <strong>@robotType</strong></span>
+            <span class="summary-item">🔗 Arms: <strong>@numberOfArms</strong></span>
+            <span class="summary-item">🏗️ Material: <strong>@material</strong></span>
+            <span class="summary-item">💪 Force: <strong>@force N</strong></span>
+        </div>
+
+        <form method="post" action="/Robotic/CalculateStability" id="arm-params-form">
+            <input type="hidden" name="robotType" value="@robotType" />
+            <input type="hidden" name="numberOfArms" value="@numberOfArms" />
+            <input type="hidden" name="material" value="@material" />
+            <input type="hidden" name="force" value="@force" />
+
+            <div class="arm-grid">
+                @for (int i = 1; i <= numberOfArms; i++)
+                {
+                    <div class="arm-card" id="arm-@i">
+                        <div class="arm-header">🔗 Arm @i</div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label for="length-@i" class="form-label">📏 Length (m)</label>
+                                <input type="number" 
+                                       step="0.001" 
+                                       min="0.001" 
+                                       max="10" 
+                                       class="form-control form-control-sm" 
+                                       id="length-@i" 
+                                       name="length-@i" 
+                                       placeholder="0.5" 
+                                       required />
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label for="outerDiameter-@i" class="form-label">Outer Diameter (m)</label>
+                                <input type="number" 
+                                       step="0.001" 
+                                       min="0.001" 
+                                       max="1" 
+                                       class="form-control form-control-sm" 
+                                       id="outerDiameter-@i" 
+                                       name="outerDiameter-@i" 
+                                       placeholder="0.05" 
+                                       required />
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label for="thickness-@i" class="form-label">🔲 Thickness (mm)</label>
+                                <input type="number" 
+                                       step="0.1" 
+                                       min="0.1" 
+                                       max="50" 
+                                       class="form-control form-control-sm" 
+                                       id="thickness-@i" 
+                                       name="thickness-@i" 
+                                       placeholder="10" 
+                                       required />
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="calculated-values" id="calculated-@i">
+                                    <strong>Calculated:</strong><br>
+                                    Inner Diameter: <span id="innerDiameter-@i">-</span> m<br>
+                                    Mass: <span id="mass-@i">-</span> kg
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-custom px-4 py-2" id="calculate-btn" disabled>
+                    🚀 Calculate Stability
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Material properties (Young's modulus in MPa, Density in kg/m³)
+    const materialProperties = {
+        'steel': { youngsModulus: 200000, density: 7850 },
+        'aluminum': { youngsModulus: 70000, density: 2700 },
+        'titanium': { youngsModulus: 116000, density: 4500 },
+        'carbonFiber': { youngsModulus: 230000, density: 1600 },
+        'brass': { youngsModulus: 105000, density: 8500 },
+        'copper': { youngsModulus: 110000, density: 8960 }
+    };
+
+    const material = '@material';
+    const materialProps = materialProperties[material];
+
+    function calculateArmValues(armIndex) {
+        const length = parseFloat(document.getElementById(`length-${armIndex}`).value) || 0;
+        const outerDiameter = parseFloat(document.getElementById(`outerDiameter-${armIndex}`).value) || 0;
+        const thickness = parseFloat(document.getElementById(`thickness-${armIndex}`).value) || 0;
+
+        if (length > 0 && outerDiameter > 0 && thickness > 0) {
+            // Convert thickness from mm to m
+            const thicknessM = thickness / 1000;
+            
+            // Calculate inner diameter
+            const innerDiameter = outerDiameter - (2 * thicknessM);
+            
+            // Calculate mass (Volume × Density)
+            const volume = Math.PI * length * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) / 4;
+            const mass = volume * materialProps.density;
+
+            // Update display
+            document.getElementById(`innerDiameter-${armIndex}`).textContent = innerDiameter.toFixed(4);
+            document.getElementById(`mass-${armIndex}`).textContent = mass.toFixed(2);
+
+            // Validate
+            const isValid = innerDiameter > 0 && mass > 0;
+            const armCard = document.getElementById(`arm-${armIndex}`);
+            armCard.classList.remove('valid', 'invalid');
+            armCard.classList.add(isValid ? 'valid' : 'invalid');
+
+            return isValid;
+        }
+        return false;
+    }
+
+    function validateAllArms() {
+        const numberOfArms = @numberOfArms;
+        let allValid = true;
+        
+        for (let i = 1; i <= numberOfArms; i++) {
+            if (!calculateArmValues(i)) {
+                allValid = false;
+            }
+        }
+        
+        document.getElementById('calculate-btn').disabled = !allValid;
+    }
+
+    // Add event listeners to all input fields
+    const numberOfArms = @numberOfArms;
+    for (let i = 1; i <= numberOfArms; i++) {
+        document.getElementById(`length-${i}`).addEventListener('input', validateAllArms);
+        document.getElementById(`outerDiameter-${i}`).addEventListener('input', validateAllArms);
+        document.getElementById(`thickness-${i}`).addEventListener('input', validateAllArms);
+    }
+
+    // Initial validation
+    validateAllArms();
+</script> 

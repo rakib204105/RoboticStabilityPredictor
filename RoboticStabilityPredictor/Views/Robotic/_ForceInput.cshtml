@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "Enter Applied Force";
+    var robotType = ViewBag.RobotType as string;
+    var numberOfArms = ViewBag.NumberOfArms;
+    var material = ViewBag.Material as string;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .force-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        margin-top: 2rem;
+        transition: transform 0.2s;
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .force-card:hover {
+        transform: scale(1.01);
+    }
+
+    .form-control:focus {
+        border-color: #e80266;
+        box-shadow: 0 0 0 0.25rem rgba(232, 2, 102, 0.25);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .btn-custom {
+        background-color: #e80266;
+        border: none;
+    }
+
+    .btn-custom:hover {
+        background-color: #c20158;
+    }
+
+    .section-header {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .summary-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+        display: inline-block;
+        margin-right: 1rem;
+        font-weight: 500;
+    }
+</style>
+
+<div class="force-card w-100">
+    <h2 class="text-center section-header">⚡ Enter Applied Force</h2>
+    
+    <div class="summary-info">
+        <span class="summary-item">🤖 Robot: <strong>@robotType</strong></span>
+        <span class="summary-item">🔗 Arms: <strong>@numberOfArms</strong></span>
+        <span class="summary-item">🏗️ Material: <strong>@material</strong></span>
+    </div>
+
+    <form method="post" action="/Robotic/ArmParameters">
+        <input type="hidden" name="robotType" value="@robotType" />
+        <input type="hidden" name="numberOfArms" value="@numberOfArms" />
+        <input type="hidden" name="material" value="@material" />
+
+        <div class="mb-4">
+            <label for="force" class="form-label">💪 Applied Force (N)</label>
+            <input type="number" 
+                   step="0.01" 
+                   min="0.01" 
+                   max="1000000" 
+                   class="form-control form-control-lg" 
+                   id="force" 
+                   name="force"
+                   placeholder="Enter the applied force in Newtons (e.g. 1000)" 
+                   required />
+            <div class="form-text">
+                Enter the force applied to the robot arms. Typical values range from 100N to 10000N.
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-custom px-4 py-2" id="next-btn" disabled>
+                🔧 Next: Arm Parameters
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('force').addEventListener('input', function() {
+        const nextBtn = document.getElementById('next-btn');
+        const value = parseFloat(this.value);
+        nextBtn.disabled = !this.value || value <= 0 || value > 1000000;
+    });
+</script> 

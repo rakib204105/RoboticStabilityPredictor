@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Choose Robot Type";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+<style>
+    /* Your existing styles here, unchanged */
+    .robot-card {
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+        border: 1.5px solid transparent;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        max-width: 320px; /* smaller width */
+        margin: 0 auto; /* center horizontally */
+    }
+
+        .robot-card:hover {
+            transform: translateY(-5px);
+            border-color: #e80266; /* softer blue */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+    .robot-img {
+        height: 160px; /* smaller height */
+        width: 100%;
+        object-fit: contain; /* change from cover to contain so full image shows */
+        background-color: #f8f9fa; /* light background so transparent images look good */
+        border-bottom: 1px solid #eee;
+    }
+
+    .robot-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #e80266; /* match border color */
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .robot-card.selected {
+        border-color: #e80266;
+    }
+
+        .robot-card.selected .checkmark {
+            opacity: 1;
+        }
+</style>
+
+<h2 class="text-center mb-4 display-6">🤖 Choose Your Robot Type</h2>
+
+<div class="container">
+    <div class="row justify-content-center g-4">
+        @foreach (var robot in new[] {
+        new { Name = "ABB", Image = "abb.jpg" },
+        new { Name = "FANUC", Image = "fanuc.jpg" },
+        new { Name = "Kuka", Image = "kuka.jpg" },
+        new { Name = "UR5", Image = "optional.jpg" }
+        })
+        {
+            <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
+                <div class="card robot-card shadow-sm" data-robot="@robot.Name" onclick="selectRobot(this)" style="width: 320px;">
+                    <img src="~/images/@robot.Image" class="card-img-top robot-img" alt="@robot.Name" />
+                    <div class="card-body text-center">
+                        <h5 class="robot-title">@robot.Name</h5>
+                    </div>
+                    <div class="checkmark">✓</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function selectRobot(card) {
+        document.querySelectorAll('.robot-card').forEach(el => el.classList.remove('selected'));
+        card.classList.add('selected');
+
+        const robotType = card.getAttribute('data-robot');
+
+        setTimeout(() => {
+            // Use regular navigation instead of AJAX
+            window.location.href = `/Robotic/InputNumberOfArms?robotType=${encodeURIComponent(robotType)}`;
+        }, 700);
+    }
+</script>

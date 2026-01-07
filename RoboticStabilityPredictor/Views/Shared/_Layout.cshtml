@@ -1,0 +1,51 @@
+﻿@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    @if (isAuthenticated)
+    {
+        <header>
+            <!-- Your existing navbar -->
+        </header>
+    }
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @if (isAuthenticated)
+    {
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2025 - RoboticStabilityPredictor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+    }
+
+    @if (IsSectionDefined("Scripts"))
+    {
+        @await RenderSectionAsync("Scripts", required: false)
+    }
+    <!-- Scripts -->
+    <script>
+            function goBackToRobotSelection() {
+            showLoader();
+            fetch('/Robotic/InputRobotType') // You must create a GET version of this action
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('#next-step-container').innerHTML = html;
+                    hideLoader();
+                });
+        }
+    </script>
+</body>
+</html>

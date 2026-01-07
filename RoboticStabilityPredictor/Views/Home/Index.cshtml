@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="text-center shadow p-5 rounded-4" style="background-color: #fdfdfd; max-width: 400px;">
+        <h1 class="mb-4 text-primary">Robotic Stability Predictor</h1>
+
+        <a class="btn btn-primary btn-lg w-100 mb-3" asp-area="Identity" asp-page="/Account/Login">
+            🔐 Login
+        </a>
+        <a class="btn btn-outline-primary btn-lg w-100 mb-3" asp-area="Identity" asp-page="/Account/Register">
+            ✍️ Register
+        </a>
+        <a class="btn btn-success btn-lg w-100" asp-controller="Robotic" asp-action="InputRobotType">
+            🚀 Continue as Guest
+        </a>
+    </div>
+</div>
