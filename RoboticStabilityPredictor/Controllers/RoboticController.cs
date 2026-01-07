@@ -337,6 +337,26 @@ namespace RoboticStabilityPredictor.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult DownloadExcel()
+        {
+             try
+             {
+                 var filePath = _excelService.GetExcelFilePath();
+                 if (!System.IO.File.Exists(filePath))
+                 {
+                     return Content("Excel file not found. Please save some data first.");
+                 }
+                 
+                 var bytes = System.IO.File.ReadAllBytes(filePath);
+                 return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "StabilityData.xlsx");
+             }
+             catch (Exception ex)
+             {
+                 return Content($"Error downloading file: {ex.Message}");
+             }
+        }
+
         // EXACT implementation matching your original code logic
         private SDDValues CalculateSDDValuesExact(string robotType, int numberOfArms, decimal force, 
             decimal minYoungModulus, decimal maxYoungModulus, decimal density,
