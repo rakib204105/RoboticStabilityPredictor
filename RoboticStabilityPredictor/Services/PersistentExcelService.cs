@@ -6,17 +6,16 @@ namespace RoboticStabilityPredictor.Services
 {
     public class PersistentExcelService
     {
-        private readonly string _excelFilePath;
+
+        // Use LocalApplicationData which works on Azure and local machines
+        private readonly string _excelFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RoboticStabilityData", "StabilityData.xlsx");
 
         public PersistentExcelService()
         {
             // Set the license context for EPPlus (NonCommercial or Commercial)
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            // Define the file path
-            _excelFilePath = @"C:\RoboticStabilityData\StabilityData.xlsx";
-
-            // Ensure the directory exists
+            // Ensure directory exists
             var directory = Path.GetDirectoryName(_excelFilePath);
             if (!Directory.Exists(directory))
             {

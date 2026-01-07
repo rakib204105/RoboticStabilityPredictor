@@ -1,0 +1,17 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Services\PersistentExcelService.cs(22,43): warning CS8604: Possible null reference argument for parameter 'path' in 'DirectoryInfo Directory.CreateDirectory(string path)'. [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Services\PersistentExcelService.cs(161,33): warning CS8602: Dereference of a possibly null reference. [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Data\ApplicationDbContextFactory.cs(19,28): error CS1061: 'DbContextOptionsBuilder<ApplicationDbContext>' does not contain a definition for 'UseSqlServer' and no accessible extension method 'UseSqlServer' accepting a first argument of type 'DbContextOptionsBuilder<ApplicationDbContext>' could be found (are you missing a using directive or an assembly reference?) [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+
+Build FAILED.
+
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Services\PersistentExcelService.cs(22,43): warning CS8604: Possible null reference argument for parameter 'path' in 'DirectoryInfo Directory.CreateDirectory(string path)'. [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Services\PersistentExcelService.cs(161,33): warning CS8602: Dereference of a possibly null reference. [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\Data\ApplicationDbContextFactory.cs(19,28): error CS1061: 'DbContextOptionsBuilder<ApplicationDbContext>' does not contain a definition for 'UseSqlServer' and no accessible extension method 'UseSqlServer' accepting a first argument of type 'DbContextOptionsBuilder<ApplicationDbContext>' could be found (are you missing a using directive or an assembly reference?) [C:\Users\BS01037.BS-01037\Desktop\C# Project\Project Upgraded to Dot Net 9\RoboticStabilityPredictor\RoboticStabilityPredictor\RoboticStabilityPredictor.csproj]
+    2 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:04.91
+
+Workload updates are available. Run `dotnet workload list` for more information.
