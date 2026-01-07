@@ -55,6 +55,11 @@ app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    
+    // Automatically apply migrations on startup
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+
     await RoleInitializer.SeedRolesAsync(services);
     
     // Initialize PersistentExcelService to create Excel file with seeded data
